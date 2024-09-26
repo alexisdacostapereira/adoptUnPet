@@ -4,10 +4,10 @@
       <div class="hero_container flex flex-col md:flex-row h-full md:h-128">
         <div class="hero_container-left-side w-full md:w-1/3 p-4">
           <NuxtImg
-            loading="lazy"
             preload
-            src="../public/img/1.png"
+            src="img/1.png"
             class="w-full h-64 md:h-full object-cover relative md:top-4"
+            width="1536"
           />
         </div>
         <div
@@ -58,13 +58,7 @@
             }"
             @click="selectAnimal('cat')"
           >
-            <NuxtImg
-              loading="lazy"
-              preload
-              src="../public/img/svg/chat.svg"
-              height="65"
-              width="65"
-            />
+            <NuxtImg preload src="img/svg/chat.svg" height="65" width="65" />
             <p>{{ $t("cat") }}</p>
           </button>
           <button
@@ -78,7 +72,7 @@
             <NuxtImg
               loading="lazy"
               preload
-              src="../public/img/svg/chien.svg"
+              src="img/svg/chien.svg"
               height="70"
               width="70"
             />
@@ -133,7 +127,7 @@
               <NuxtImg
                 loading="lazy"
                 preload
-                src="../public/img/svg/list.svg"
+                src="img/svg/list.svg"
                 width="50px"
               />
             </div>
@@ -161,8 +155,9 @@
           class="how-to-adopt__container-right-side w-full md:w-1/3 flex justify-center items-center mt-8 md:mt-0"
         >
           <NuxtImg
-            src="../public/img/2.png"
+            src="img/2.png"
             class="w-full max-w-sm md:max-w-full h-auto object-cover top-7 relative md:top-8"
+            width="1536"
           />
         </div>
       </div>

@@ -14,7 +14,7 @@
             @click="selectAnimal('cat')"
           >
             <NuxtImg
-              src="../public/img/svg/chat.svg"
+              src="img/svg/chat.svg"
               height="65"
               width="65"
               loading="lazy"
@@ -31,7 +31,7 @@
             @click="selectAnimal('dog')"
           >
             <NuxtImg
-              src="../public/img/svg/chien.svg"
+              src="img/svg/chien.svg"
               height="70"
               width="70"
               loading="lazy"

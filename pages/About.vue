@@ -23,7 +23,7 @@
           <NuxtImg
             loading="lazy"
             preload
-            src="../public/img/familly.jpg"
+            src="img/familly.jpg"
             alt="Une famille heureuse avec leur animal adopté"
             class="rounded-lg shadow-md w-full md:w-[90%] h-auto"
           />
@@ -44,7 +44,7 @@
           <NuxtImg
             loading="lazy"
             preload
-            src="../public/img/fonder.jpg"
+            src="img/fonder.jpg"
             alt="Notre fondatrice avec des animaux de refuge"
             class="rounded-lg shadow-md w-full md:w-[90%] h-auto"
           />

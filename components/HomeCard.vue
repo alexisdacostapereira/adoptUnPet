@@ -9,7 +9,7 @@
         <NuxtImg
           loading="lazy"
           preload
-          src="../public/img/svg/patte.svg"
+          src="img/svg/patte.svg"
           height="50px"
           width="50px"
         />
