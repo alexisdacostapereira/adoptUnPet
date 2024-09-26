@@ -26,6 +26,7 @@ export default defineNuxtConfig({
   },
   image: {
     dir: "public",
-    domains: ["localhost", "https://adopt-un-pet.vercel.app/"],
+    domains: ["localhost", "adopt-un-pet.vercel.app"],
+    provider: "vercel",
   },
 });
