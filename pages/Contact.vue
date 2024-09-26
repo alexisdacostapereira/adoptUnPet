@@ -103,7 +103,7 @@
           <div
             class="contact__coordinate-map bg-gray-200 h-48 md:h-64 rounded-lg flex items-center justify-center"
           >
-            <Map zoom="16" :set-view="[48.7643242, 2.3892738]" />
+            <Map :zoom="16" :set-view="[48.7643242, 2.3892738]" />
           </div>
         </div>
       </div>

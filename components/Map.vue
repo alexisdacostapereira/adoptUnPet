@@ -74,7 +74,7 @@ const updateMarkers = () => {
     });
   } else {
     const marker = L.marker(props.setView, {
-      icon: createCustomIcon(),
+      icon: createCustomIcon("img/image.png"),
     })
       .addTo(map)
       .bindPopup("Notre siège est ici");
