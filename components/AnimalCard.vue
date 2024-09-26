@@ -13,7 +13,7 @@
       <div
         class="absolute top-0 left-0 bg-primary text-white px-2 py-1 m-2 rounded-md text-sm"
       >
-        {{ $t(type) }} {{ avatar }}
+        {{ $t(type) }}
       </div>
     </div>
     <div class="p-4">
