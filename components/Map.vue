@@ -61,6 +61,8 @@ const updateMarkers = () => {
 
   if (props.animals.length > 0) {
     props.animals.forEach((animal) => {
+      console.log(animal.avatar);
+
       const marker = L.marker(
         [animal.geolocation.latitude, animal.geolocation.longitude],
         { icon: createCustomIcon(animal.avatar) }
@@ -72,7 +74,7 @@ const updateMarkers = () => {
     });
   } else {
     const marker = L.marker(props.setView, {
-      icon: createCustomIcon("/img/image.png"),
+      icon: createCustomIcon("/img/avatars/chat1.png"),
     })
       .addTo(map)
       .bindPopup("Notre siège est ici");
