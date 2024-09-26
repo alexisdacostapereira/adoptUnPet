@@ -76,13 +76,13 @@
         v-if="loading"
         class="loading text-center py-8 text-lg text-gray-600"
       >
-        Chargement des animaux...
+        {{ $t("loading_animals") }}
       </div>
       <div
         v-else-if="filteredAnimals.length === 0"
         class="no-results text-center py-8 text-lg text-gray-600"
       >
-        Aucun animal ne correspond à vos critères.
+        {{ $t("no_animals") }}
       </div>
       <div
         v-else
@@ -108,7 +108,7 @@
         v-if="loadingMore"
         class="loading-more text-center py-4 text-lg text-gray-600"
       >
-        Chargement de plus d'animaux...
+        {{ $t("loading_more_animals") }}
       </div>
     </section>
   </div>

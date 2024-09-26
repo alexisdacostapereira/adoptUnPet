@@ -133,6 +133,8 @@ export default defineI18nConfig(() => ({
         "Balto is a young Husky full of energy. Abandoned for being too restless, he's looking for a sporty family who can channel his energy. Friendly and playful, he loves long hikes and pulling activities. A true adventure companion!",
       spot_desc:
         "Spot is a young Dalmatian full of life. Born in a large litter, he was the last to find a family. Playful and affectionate, he loves running and playing. With his boundless energy, he'll be perfect for an active and patient family.",
+      year: "years",
+      not_found: "Animal not found",
     },
     fr: {
       welcome: "Bienvenue",
@@ -269,6 +271,8 @@ export default defineI18nConfig(() => ({
       loading_animals: "Chargement des animaux...",
       no_animals: "Aucun animal ne correspond à vos critères.",
       loading_more_animals: " Chargement de plus d'animaux...",
+      year: "ans",
+      not_found: "Animal non trouvé",
     },
   },
 }));

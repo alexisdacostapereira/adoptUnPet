@@ -41,9 +41,9 @@
             <h1 class="mt-1 text-3xl font-bold text-primary-dark">
               {{ animal.name }}
             </h1>
-            <p class="mt-2 text-gray-700">{{ animal.age }} ans</p>
+            <p class="mt-2 text-gray-700">{{ animal.age }} {{ $t("year") }}</p>
             <p class="mt-2 text-gray-700">{{ animal.city }}</p>
-            <p class="mt-4 text-gray-600">{{ animal.description }}</p>
+            <p class="mt-4 text-gray-600">{{ $t(animal.description) }}</p>
 
             <div class="mt-6 flex items-center">
               <svg
@@ -72,7 +72,7 @@
               <button
                 class="w-full sm:w-auto bg-primary hover:bg-primary-dark text-white font-bold py-2 px-4 rounded-full transition duration-300"
               >
-                Adopter {{ animal.name }}
+                {{ $t("adopt") }} {{ animal.name }}
               </button>
             </div>
           </div>
@@ -86,19 +86,19 @@
         <div class="bg-white rounded-xl shadow-md p-6">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <h3 class="font-semibold text-primary">Type</h3>
+              <h3 class="font-semibold text-primary">{{ $t("type") }}</h3>
               <p class="text-gray-700">{{ animal.type }}</p>
             </div>
             <div>
-              <h3 class="font-semibold text-primary">Race</h3>
+              <h3 class="font-semibold text-primary">{{ $t("race") }}</h3>
               <p class="text-gray-700">{{ animal.race }}</p>
             </div>
             <div>
-              <h3 class="font-semibold text-primary">Âge</h3>
-              <p class="text-gray-700">{{ animal.age }} ans</p>
+              <h3 class="font-semibold text-primary">{{ $t("age") }}</h3>
+              <p class="text-gray-700">{{ animal.age }} {{ $t("year") }}</p>
             </div>
             <div>
-              <h3 class="font-semibold text-primary">Ville</h3>
+              <h3 class="font-semibold text-primary">{{ $t("city") }}</h3>
               <p class="text-gray-700">{{ animal.city }}</p>
             </div>
           </div>
@@ -106,7 +106,7 @@
       </div>
     </div>
     <div v-else class="flex items-center justify-center h-screen">
-      <p class="text-2xl font-bold text-primary">Animal non trouvé</p>
+      <p class="text-2xl font-bold text-primary">{{ $t("not_found") }}</p>
     </div>
   </div>
 </template>
