@@ -3,84 +3,100 @@
 </template>
 
 <script setup>
-const props = defineProps(["animals", "zoom", "setView"]);
+import { ref, onMounted, watch, onUnmounted } from "vue";
+import "leaflet/dist/leaflet.css";
+
+const props = defineProps({
+  animals: {
+    type: Array,
+    default: () => [],
+  },
+  zoom: {
+    type: Number,
+    default: 6,
+  },
+  setView: {
+    type: Array,
+    required: true,
+  },
+});
+
 const mapContainer = ref(null);
 let map = null;
+let L = null;
 let markers = [];
 
-const initMap = async () => {
-  if (process.client) {
-    const L = await import("leaflet");
-    await import("leaflet/dist/leaflet.css");
-
-    if (!map) {
-      map = L.map(mapContainer.value).setView(props.setView, props.zoom);
-
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "© OpenStreetMap contributors",
-      }).addTo(map);
-    }
-
-    updateMarkers(L);
-  }
+const createCustomIcon = (imageUrl) => {
+  return L.divIcon({
+    className: "custom-div-icon",
+    html: `
+      <div class="marker-pin">
+        <div class="pin-background"></div>
+        <div class="pin-image" style="background-image: url('${imageUrl}');"></div>
+      </div>
+    `,
+    iconSize: [30, 42],
+    iconAnchor: [15, 42],
+    popupAnchor: [0, -42],
+  });
 };
 
-const updateMarkers = (L) => {
+const createPopupContent = (animal) => {
+  return `
+    <div class="custom-popup">
+      <img src="${animal.avatar}" alt="${animal.name}" class="animal-avatar">
+      <div class="animal-info">
+        <p><strong>Animal:</strong> ${animal.type}</p>
+        <p><strong>Race:</strong> ${animal.race}</p>
+        <p><strong>Nom:</strong> ${animal.name}</p>
+        <p><strong>Age:</strong> ${animal.age} ans</p>
+      </div>
+    </div>
+  `;
+};
+
+const updateMarkers = () => {
   markers.forEach((marker) => marker.remove());
   markers = [];
 
-  if (props.animals && props.animals.length > 0) {
+  if (props.animals.length > 0) {
     props.animals.forEach((animal) => {
-      const customIcon = L.divIcon({
-        className: "custom-div-icon",
-        html: `<div class="marker-pin"><div class="pin-background"></div><div class="pin-image" style="background-image: url('${animal.avatar}');"></div></div>`,
-        iconSize: [30, 42],
-        iconAnchor: [15, 42],
-        popupAnchor: [0, -42],
-      });
-
-      const popupContent = `
-        <div class="custom-popup">
-          <img src="${animal.avatar}" alt="${animal.name}" class="animal-avatar">
-          <div class="animal-info">
-            <p><strong>Animal:</strong> ${animal.type}</p>
-            <p><strong>Race:</strong> ${animal.race}</p>
-            <p><strong>Nom:</strong> ${animal.name}</p>
-            <p><strong>Age:</strong> ${animal.age} ans</p>
-          </div>
-        </div>
-      `;
-
       const marker = L.marker(
         [animal.geolocation.latitude, animal.geolocation.longitude],
-        {
-          icon: customIcon,
-        }
+        { icon: createCustomIcon(animal.avatar) }
       )
         .addTo(map)
-        .bindPopup(popupContent);
+        .bindPopup(createPopupContent(animal));
 
       markers.push(marker);
     });
   } else {
-    const marker = L.marker(props.setView)
+    const marker = L.marker(props.setView, {
+      icon: createCustomIcon("/img/image.png"),
+    })
       .addTo(map)
       .bindPopup("Notre siège est ici");
     markers.push(marker);
   }
 };
 
+const initMap = async () => {
+  if (process.client && !map) {
+    L = (await import("leaflet")).default;
+
+    map = L.map(mapContainer.value).setView(props.setView, props.zoom);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "© OpenStreetMap contributors",
+    }).addTo(map);
+
+    updateMarkers();
+  }
+};
+
 onMounted(initMap);
 
-watch(
-  () => props.animals,
-  () => {
-    if (map) {
-      updateMarkers(L);
-    }
-  },
-  { deep: true }
-);
+watch(() => props.animals, updateMarkers, { deep: true });
 
 onUnmounted(() => {
   if (map) {
@@ -129,7 +145,6 @@ onUnmounted(() => {
   left: 50%;
   top: 50%;
   margin: -12px 0 0 -12px;
-  transform: rotate(45deg);
 }
 
 :global(.custom-popup) {

@@ -135,6 +135,7 @@
           src="/img/banner.jpg"
           alt="Animaux heureux"
           class="rounded-lg shadow-md mx-auto w-full max-w-2xl"
+          width="700"
         />
       </div>
     </div>
