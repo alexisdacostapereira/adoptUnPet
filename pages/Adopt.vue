@@ -119,7 +119,6 @@ useHead({
   title: "AdopteUnPet - Adopter",
 });
 
-const route = useRoute();
 const router = useRouter();
 const cityStore = useCityStore();
 const ageStore = useAgeStore();
@@ -139,90 +138,102 @@ const selectedRace = ref("");
 
 const animalsList = ref(null);
 
-const filteredAnimals = computed(() => {
-  return animals.value.filter(
-    (animal) =>
-      (!animalStore.getSelectedAnimal ||
-        animal.type === animalStore.getSelectedAnimal) &&
-      (!cityStore.getSelectedCity ||
-        animal.city === cityStore.getSelectedCity) &&
-      (!ageStore.getSelectedAge ||
-        isInAgeRange(animal.age, ageStore.getSelectedAge)) &&
-      (!raceStore.getSelectedRace || animal.race === raceStore.getSelectedRace)
-  );
-});
+const filteredAnimals = computed(() => animals.value);
 
-const filteredCities = computed(() => [
-  ...new Set(animals.value.map((animal) => animal.city)),
-]);
-const filteredRaces = computed(() => [
-  ...new Set(animals.value.map((animal) => animal.race)),
-]);
+const filteredCities = ref([]);
+const filteredRaces = ref([]);
 const age = ["0 - 1", "2 - 5", "6 - 10", "11 - 15", "16 - 20", "21 +"];
 
 onMounted(async () => {
-  await loadAnimals();
-  initFiltersFromURL();
+  await initFiltersFromURL();
+  if (!animals.value.length) {
+    await loadInitialData();
+  }
   setupInfiniteScroll();
 });
 
-watch(selectedCity, (newCity) => {
-  cityStore.setCity(newCity);
-  updateURL();
-  resetPagination();
-});
-
-watch(selectedAge, (newAge) => {
-  ageStore.setAge(newAge);
-  updateURL();
-  resetPagination();
-});
-
-watch(selectedRace, (newRace) => {
-  raceStore.setRace(newRace);
-  updateURL();
-  resetPagination();
-});
-
 watch(
-  () => animalStore.selectedAnimal,
+  [selectedCity, selectedAge, selectedRace, () => animalStore.selectedAnimal],
   () => {
     updateURL();
-    resetPagination();
-  }
+    loadAnimals();
+  },
+  { deep: true }
 );
 
+async function loadInitialData() {
+  await loadAnimals();
+  await loadFilterOptions();
+}
+
 async function loadAnimals() {
+  loading.value = true;
   try {
-    const response = await fetch("/data/animals.json");
-    animals.value = await response.json();
-    await nextTick();
-    loading.value = false;
-    loadMoreAnimals();
+    const { data } = await useFetch("/api/animals", {
+      method: "GET",
+      query: {
+        type: animalStore.selectedAnimal,
+        city: selectedCity.value,
+        age: selectedAge.value,
+        race: selectedRace.value,
+      },
+    });
+    animals.value = data.value;
+    resetPagination();
+    await loadMoreAnimals();
   } catch (error) {
     console.error("Error loading animals:", error);
+  } finally {
+    loading.value = false;
   }
 }
 
-function loadMoreAnimals() {
-  const start = (page.value - 1) * perPage;
-  const end = start + perPage;
-  const newAnimals = filteredAnimals.value.slice(start, end);
-  displayedAnimals.value = [...displayedAnimals.value, ...newAnimals];
-  page.value++;
+async function loadFilterOptions() {
+  try {
+    const { data: cityData } = await useFetch("/api/cities", {
+      query: {
+        type: animalStore.selectedAnimal,
+      },
+    });
+    filteredCities.value = cityData.value;
+
+    const { data: raceData } = await useFetch("/api/races", {
+      query: {
+        type: animalStore.selectedAnimal,
+      },
+    });
+    filteredRaces.value = raceData.value;
+  } catch (error) {
+    console.error("Error loading filter options:", error);
+  }
+}
+
+async function loadMoreAnimals() {
+  if (
+    loadingMore.value ||
+    displayedAnimals.value.length >= animals.value.length
+  )
+    return;
+
+  loadingMore.value = true;
+  try {
+    const start = displayedAnimals.value.length;
+    const end = start + perPage;
+    const newAnimals = animals.value.slice(start, end);
+    displayedAnimals.value = [...displayedAnimals.value, ...newAnimals];
+    page.value++;
+  } catch (error) {
+    console.error("Error loading more animals:", error);
+  } finally {
+    loadingMore.value = false;
+  }
 }
 
 function setupInfiniteScroll() {
   const observer = new IntersectionObserver(
     ([entry]) => {
-      if (
-        entry.isIntersecting &&
-        !loadingMore.value &&
-        displayedAnimals.value.length < filteredAnimals.value.length
-      ) {
-        loadingMore.value = true;
+      if (entry.isIntersecting && !loadingMore.value) {
         loadMoreAnimals();
-        loadingMore.value = false;
       }
     },
     { rootMargin: "100px" }
@@ -236,51 +247,56 @@ function setupInfiniteScroll() {
 function resetPagination() {
   page.value = 1;
   displayedAnimals.value = [];
-  loadMoreAnimals();
 }
 
-function updateURL() {
-  const query = {
-    animal: animalStore.getSelectedAnimal,
-    city: cityStore.getSelectedCity,
-    age: ageStore.getSelectedAge,
-    race: raceStore.getSelectedRace,
-  };
-  router.push({
-    query: Object.fromEntries(
-      Object.entries(query).filter(([_, v]) => v != null)
-    ),
-  });
-}
+async function initFiltersFromURL() {
+  const { animal, city, age, race } = router.currentRoute.value.query;
+  let filtersChanged = false;
 
-function initFiltersFromURL() {
-  const { animal, city, age, race } = route.query;
   if (animal) {
     animalStore.setAnimal(animal);
+    filtersChanged = true;
   }
   if (city) {
     cityStore.setCity(city);
     selectedCity.value = city;
+    filtersChanged = true;
   }
   if (age) {
     ageStore.setAge(age);
     selectedAge.value = age;
+    filtersChanged = true;
   }
   if (race) {
     raceStore.setRace(race);
     selectedRace.value = race;
+    filtersChanged = true;
+  }
+
+  if (filtersChanged) {
+    await loadFilterOptions();
+    await loadAnimals();
   }
 }
 
 function selectAnimal(animal) {
   animalStore.setAnimal(animal);
+  selectedRace.value = "";
   updateURL();
-  resetPagination();
+  loadFilterOptions();
+  loadAnimals();
 }
 
-function isInAgeRange(age, range) {
-  const [min, max] = range.split("-").map(Number);
-  return age >= min && age <= (max || Infinity);
+function updateURL() {
+  const query = {
+    animal: animalStore.selectedAnimal,
+    city: selectedCity.value,
+    age: selectedAge.value,
+    race: selectedRace.value,
+  };
+  router.push({
+    query: Object.fromEntries(Object.entries(query).filter(([_, v]) => v)),
+  });
 }
 
 function resetAllFilters() {
@@ -288,19 +304,17 @@ function resetAllFilters() {
   cityStore.setCity(null);
   ageStore.setAge(null);
   raceStore.setRace(null);
-
   selectedCity.value = "";
   selectedAge.value = "";
   selectedRace.value = "";
-
   updateURL();
-
-  resetPagination();
+  loadFilterOptions();
+  loadAnimals();
 }
 
-const goToAnimalPage = (name) => {
+function goToAnimalPage(name) {
   router.push(`/animals/${name}`);
-};
+}
 </script>
 
 <style scoped>

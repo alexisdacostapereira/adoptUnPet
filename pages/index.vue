@@ -207,7 +207,6 @@
   </div>
 </template>
 <script setup>
-import { useI18n } from "vue-i18n";
 useHead({
   title: "AdopteUnPet - Acceuil",
 });
@@ -230,8 +229,9 @@ const { t } = useI18n();
 onMounted(async () => {
   resetFilters();
   try {
-    const response = await fetch("/data/animals.json");
-    animals.value = await response.json();
+    const { data } = await useFetch("/api/animals", { method: "GET" });
+    console.log(data);
+    animals.value = data.value;
   } catch (error) {
     console.error("Error loading animals data:", error);
   }
@@ -263,13 +263,7 @@ const filteredRaces = computed(() => {
 });
 
 const filteredCities = computed(() => {
-  if (!animalStore.selectedAnimal) {
-    return [...new Set(animals.value.map((animal) => animal.city))];
-  }
-  const filteredAnimals = animals.value.filter(
-    (animal) => animal.type === animalStore.selectedAnimal
-  );
-  return [...new Set(filteredAnimals.map((animal) => animal.city))];
+  return [...new Set(animals.value.map((animal) => animal.city))];
 });
 
 const selectAnimal = (selectedAnimal) => {

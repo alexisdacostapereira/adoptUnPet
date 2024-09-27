@@ -115,16 +115,11 @@
 import { useRouter } from "vue-router";
 
 const router = useRouter();
-const route = useRoute();
-const { data: animals } = await useFetch("/data/animals.json");
 
-const animal = computed(() =>
-  animals.value?.find(
-    (a) =>
-      a.name.toLowerCase() ===
-      decodeURIComponent(route.params.name).toLowerCase()
-  )
-);
+const { name } = useRoute().params;
+const { data: animal } = await useFetch(`/api/animals/${name}`, {
+  key: `{$name}`,
+});
 
 useHead(() => ({
   title: animal.value
