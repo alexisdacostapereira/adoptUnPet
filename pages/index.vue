@@ -238,11 +238,6 @@ onMounted(async () => {
 });
 
 const resetFilters = () => {
-  const cityStore = useCityStore();
-  const ageStore = useAgeStore();
-  const raceStore = useRaceStore();
-  const animalStore = useAnimalStore();
-
   cityStore.setCity(null);
   ageStore.setAge(null);
   raceStore.setRace(null);

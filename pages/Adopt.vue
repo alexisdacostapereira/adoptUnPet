@@ -253,25 +253,32 @@ async function initFiltersFromURL() {
   const { animal, city, age, race } = router.currentRoute.value.query;
   let filtersChanged = false;
 
-  if (animal) {
-    animalStore.setAnimal(animal);
+  const setFilter = (key, value) => {
+    switch (key) {
+      case "animal":
+        animalStore.setAnimal(value);
+        break;
+      case "city":
+        cityStore.setCity(value);
+        selectedCity.value = value;
+        break;
+      case "age":
+        ageStore.setAge(value);
+        selectedAge.value = value;
+        break;
+      case "race":
+        raceStore.setRace(value);
+        selectedRace.value = value;
+        break;
+    }
     filtersChanged = true;
-  }
-  if (city) {
-    cityStore.setCity(city);
-    selectedCity.value = city;
-    filtersChanged = true;
-  }
-  if (age) {
-    ageStore.setAge(age);
-    selectedAge.value = age;
-    filtersChanged = true;
-  }
-  if (race) {
-    raceStore.setRace(race);
-    selectedRace.value = race;
-    filtersChanged = true;
-  }
+  };
+
+  Object.entries({ animal, city, age, race }).forEach(([key, value]) => {
+    if (value) {
+      setFilter(key, value);
+    }
+  });
 
   if (filtersChanged) {
     await loadFilterOptions();
